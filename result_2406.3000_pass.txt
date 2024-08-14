@@ -1,0 +1,45 @@
+leadid: dlettis
+PR account: 11
+    10950279 popmamic
+    11048361 popmamic
+    11059626 siddua0w
+    11061364 wilmsen
+    11063771 ptrq9g
+    11071220 cffg7c
+    11072083 cffg7c
+    11079202 zhangr
+    12022263 yd5dho
+    12022956 yd5dho
+    12022977 on6xyk
+ER account: 1
+    11025135 lili
+total assignee: 9
+    assigneeid: [OTHER]	-> (cffg7c, wilmsen, popmamic, lili, ptrq9g, zhangr, siddua0w, yd5dho, on6xyk)
+
+leadid: vanterve
+PR account: 9
+    10998185 r8vhdk
+    11061013 balkenen
+    11062175 wrpv2r
+    11069481 mhus6k
+    11071195 9pbvm9
+    11072217 mhus6k
+    11076749 9pbvm9
+    11081990 vd2oek
+    12028514 mhus6k
+ER account: 0
+total assignee: 6
+    assigneeid: [all]	-> Fixed Plane Additive PRs for Sagar (9pbvm9, balkenen, wrpv2r, mhus6k, vd2oek, r8vhdk)
+
+leadid: buerer
+PR account: 6
+    11050792 4urhkm
+    12025519 x_thite
+    12025524 x_thite
+    12025530 x_thite
+    12025824 brenneck
+    12027039 brenneck
+ER account: 0
+total assignee: 3
+    assigneeid: [else]	-> CMM PR for Jeff Moffatt (x_thite, 4urhkm, brenneck)
+

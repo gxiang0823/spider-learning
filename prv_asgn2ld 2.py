@@ -22,7 +22,7 @@
 
 import json
 import sys
-import urllib.request
+import requests
 
 
 class Leader:
@@ -195,6 +195,8 @@ getResponse = requests.get(
 handle_get_response(getResponse)
 callIdSet = set()
 build_call_id_set(getResponse.text, callIdSet)
+
+print(callIdSet)
 
 # POST Request
 POST_URL = "https://nxrelmgtapi.net.plm.eds.com:7373/calls/search"
