@@ -1,3 +1,4 @@
+import os.path
 import sys
 import urllib.parse
 import urllib.request
@@ -73,12 +74,15 @@ def Post_Request(Call_ID_Set, cookie):
 
     return post_data_json
 
+
 def Get_Leader_Info(leader, Assignee_Info):
     print(leader)
     print(Assignee_Info)
 
+
 def Data_Process(post_data_json):
     Rows = []
+    Save_Info = []
     content_list = post_data_json['content']
     for ct in content_list:
         call_type = ct['currentCallType']
@@ -92,8 +96,15 @@ def Data_Process(post_data_json):
             Assignee_Email = str(assignee['email'])
             Leader_ID = str(assignee['leaderId'])
             Supervisor_ID = str(assignee['supervisorId'])
+            firstName = str(assignee['firstName'])
+            lastName = str(assignee['lastName'])
+            Name = firstName + " " + lastName
             Rows.append({'Call_ID': Call_ID, 'Call_Type': Call_Type, 'Assignee_ID': Assignee_ID,
-                         'Assignee_Email': Assignee_Email, 'Leader_ID': Leader_ID, 'Supervisor_ID':Supervisor_ID, 'application':application})
+                         'Assignee_Email': Assignee_Email, 'Leader_ID': Leader_ID, 'Supervisor_ID': Supervisor_ID,
+                         'application': application})
+            Save_Info.append({'Dev_ID': Assignee_ID,
+                              'Dev_Email': Assignee_Email, 'Dev_Name': Name, 'Leader_ID': Leader_ID,
+                              'Supervisor_ID': Supervisor_ID})
         elif call_type['value'] == 'PR':
             Call_Type = 'PR'
             pr = ct['pr']
@@ -103,20 +114,39 @@ def Data_Process(post_data_json):
             Assignee_Email = str(assignee['email'])
             Leader_ID = str(assignee['leaderId'])
             Supervisor_ID = str(assignee['supervisorId'])
+            firstName = str(assignee['firstName'])
+            lastName = str(assignee['lastName'])
+            Name = firstName + " " + lastName
             Rows.append({'Call_ID': Call_ID, 'Call_Type': Call_Type, 'Assignee_ID': Assignee_ID,
-                         'Assignee_Email': Assignee_Email, 'Leader_ID': Leader_ID, 'Supervisor_ID':Supervisor_ID, 'application':application})
-    Final_Result = pd.DataFrame(Rows)
+                         'Assignee_Email': Assignee_Email, 'Leader_ID': Leader_ID, 'Supervisor_ID': Supervisor_ID,
+                         'application': application})
+            Save_Info.append({'Dev_ID': Assignee_ID,
+                              'Dev_Email': Assignee_Email, 'Dev_Name': Name, 'Leader_ID': Leader_ID,
+                              'Supervisor_ID': Supervisor_ID})
 
-    pr_groups = {leader_id : group for leader_id, group in Final_Result.groupby('Leader_ID')}
+    Dev_Info = pd.DataFrame(Save_Info)
+    Now_Dev_Info = Dev_Info.drop_duplicates()
+    Info_file_path = 'Dev_Info.csv'
+    if os.path.exists(Info_file_path):
+        Dev_Info_csv = pd.read_csv(Info_file_path)
+        new_items = Now_Dev_Info.merge(Dev_Info_csv, how='left',indicator=True).query('_merge == "left_only"').drop('_merge',axis=1)
+        # new_items = Now_Dev_Info[~Now_Dev_Info.isin(Dev_Info_csv).all(axis=1)]
+        Update_Info = pd.concat([Dev_Info_csv, new_items],ignore_index=True)
+        Update_Info.to_csv(Info_file_path,index=False)
+    else:
+        Now_Dev_Info.to_csv(Info_file_path,index=False)
+
+    Final_Result = pd.DataFrame(Rows)
+    pr_groups = {leader_id: group for leader_id, group in Final_Result.groupby('Leader_ID')}
 
     original_stdout = sys.stdout
-    with open('result.txt','w') as file:
+    with open('result.txt', 'w') as file:
         sys.stdout = file
         for leader, item in pr_groups.items():
             print(f"Leader_ID:   {leader}")
-            print(item[['Call_ID','Call_Type','Assignee_ID','Assignee_Email']])
-            PR_Num = item[item['Call_Type'] == 'PR' ].shape[0]
-            ER_Num = item[item['Call_Type'] == 'ER' ].shape[0]
+            print(item[['Call_ID', 'Call_Type', 'Assignee_ID', 'Assignee_Email']])
+            PR_Num = item[item['Call_Type'] == 'PR'].shape[0]
+            ER_Num = item[item['Call_Type'] == 'ER'].shape[0]
             Assignee_Info = item['Assignee_ID'].unique()
             print(f"PR Num: {PR_Num}    ER Num: {ER_Num}    total assignee: {len(Assignee_Info)}")
             print("\n")
@@ -127,7 +157,7 @@ def Data_Process(post_data_json):
             # Assignee_output = ", ".join(str(assignee) for assignee in Assignee_Info)
             # print(f"assignee_id: [{Assignee_output}]")
 
-    sys.stdout =  original_stdout
+    sys.stdout = original_stdout
 
 
 if __name__ == '__main__':
@@ -143,7 +173,7 @@ if __name__ == '__main__':
     # print("****************************************************************")
 
     # test code
-    release = "2406.4000"
+    release = "2406.3000"
     pbu = "cam"
     validation = "Pass"
     cookie = "JSESSIONID=8D96F4275A4ECBD4129808134F6A8906"
