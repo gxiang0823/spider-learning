@@ -1,0 +1,52 @@
+Leader_ID:   buerer
+     Call_ID Call_Type Assignee_ID               Assignee_Email
+0    9829709        PR      hwangb      bruce.hwang@siemens.com
+2   10890512        PR      hwangb      bruce.hwang@siemens.com
+3   10934925        PR      4urhkm  paul.andrus.ext@siemens.com
+20  11093272        PR      4urhkm  paul.andrus.ext@siemens.com
+30  12037463        PR    brenneck   dirk.brennecke@siemens.com
+PR Num: 5    ER Num: 0    total assignee: 3
+
+
+Leader_ID:   dlettis
+     Call_ID Call_Type Assignee_ID             Assignee_Email
+1   10860397        PR      a9zpeb  geert.spakman@siemens.com
+4   11031755        PR    popmamic  michiel.popma@siemens.com
+5   11038312        PR    popmamic  michiel.popma@siemens.com
+10  11075719        PR     srinath  gopal.srinath@siemens.com
+11  11075731        PR     srinath  gopal.srinath@siemens.com
+12  11075740        PR     srinath  gopal.srinath@siemens.com
+13  11077827        PR     srinath  gopal.srinath@siemens.com
+14  11077838        PR     srinath  gopal.srinath@siemens.com
+15  11077842        PR     srinath  gopal.srinath@siemens.com
+16  11077844        PR     srinath  gopal.srinath@siemens.com
+17  11088330        PR      on6xyk   sophie.oudot@siemens.com
+18  11088756        PR      xoo8zx    yichao.deng@siemens.com
+19  11091460        PR      xoo8zx    yichao.deng@siemens.com
+22  11094744        PR      xoo8zx    yichao.deng@siemens.com
+26  12030761        PR      xoo8zx    yichao.deng@siemens.com
+27  12031201        PR      xoo8zx    yichao.deng@siemens.com
+28  12031936        PR      xoo8zx    yichao.deng@siemens.com
+29  12033375        PR      xoo8zx    yichao.deng@siemens.com
+PR Num: 18    ER Num: 0    total assignee: 5
+
+
+Leader_ID:   vanterve
+     Call_ID Call_Type Assignee_ID                      Assignee_Email
+6   11060999        PR      9pbvm9      dhananjay.kulkarni@siemens.com
+7   11062175        PR      wrpv2r             manoj_patil@siemens.com
+8   11069947        PR      phxcf8           satbir.sahani@siemens.com
+9   11070017        PR      phxcf8           satbir.sahani@siemens.com
+21  11094304        PR      9pbvm9      dhananjay.kulkarni@siemens.com
+23  11098984        PR      9pbvm9      dhananjay.kulkarni@siemens.com
+24  12022501        PR      9pbvm9      dhananjay.kulkarni@siemens.com
+25  12022507        PR      ex0xus  purushottam.thakre.ext@siemens.com
+PR Num: 8    ER Num: 0    total assignee: 4
+
+
+buerer
+['hwangb' '4urhkm' 'brenneck']
+dlettis
+['a9zpeb' 'popmamic' 'srinath' 'on6xyk' 'xoo8zx']
+vanterve
+['9pbvm9' 'wrpv2r' 'phxcf8' 'ex0xus']
