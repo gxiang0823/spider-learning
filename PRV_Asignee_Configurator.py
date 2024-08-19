@@ -27,7 +27,6 @@ def Get_Request(release, pbu, validation, cookie):
     get_response = urllib.request.urlopen(get_request)
     get_content = get_response.read().decode('utf-8')
     get_data_json = json.loads(get_content)
-    # down_load(get_data_json)
 
     Call_ID_Set = set()
     for item in get_data_json:
@@ -69,15 +68,29 @@ def Post_Request(Call_ID_Set, cookie):
         print("*************************************************************")
         sys.exit(0)
     post_data_json = json.loads(post_content)
-    down_load(post_data_json)
-    # print(post_data_json)
+
+    # Down Load PR information
+
+    # down_load(post_data_json)
 
     return post_data_json
 
 
-def Get_Leader_Info(leader, Assignee_Info):
-    print(leader)
-    print(Assignee_Info)
+def Get_Leader_Info(leader, item):
+    Assignee_Info = item['Assignee_ID'].unique()
+    if leader == 'buerer':
+        output_info = ", ".join(Assignee_Info)
+        print(f"Assignee ID: [else]\t-> CMM PR for Jeff Moffatt [{output_info}]\n")
+    elif leader == 'vanterve':
+        output_info = ", ".join(Assignee_Info)
+        print(f"Assignee ID: [all]\t-> Fixed Plane Additive PRs for Sagar [{output_info}]\n")
+    elif leader == 'paradise':
+        output_info = ", ".join(Assignee_Info)
+        print(f"Assignee ID: [all]\t-> CAM Machining PRs for Eric and the interns [{output_info}]\n")
+    else:
+        output_info = ", ".join(Assignee_Info)
+        print(f"Assignee ID: [other]\t-> [{output_info}]\n")
+
 
 
 def Data_Process(post_data_json):
@@ -124,18 +137,19 @@ def Data_Process(post_data_json):
                               'Dev_Email': Assignee_Email, 'Dev_Name': Name, 'Leader_ID': Leader_ID,
                               'Supervisor_ID': Supervisor_ID})
 
+    # Save/Update developer information
     Dev_Info = pd.DataFrame(Save_Info)
     Now_Dev_Info = Dev_Info.drop_duplicates()
     Info_file_path = 'Dev_Info.csv'
     if os.path.exists(Info_file_path):
         Dev_Info_csv = pd.read_csv(Info_file_path)
         new_items = Now_Dev_Info.merge(Dev_Info_csv, how='left',indicator=True).query('_merge == "left_only"').drop('_merge',axis=1)
-        # new_items = Now_Dev_Info[~Now_Dev_Info.isin(Dev_Info_csv).all(axis=1)]
         Update_Info = pd.concat([Dev_Info_csv, new_items],ignore_index=True)
         Update_Info.to_csv(Info_file_path,index=False)
     else:
         Now_Dev_Info.to_csv(Info_file_path,index=False)
 
+    # Save of assignee information
     Final_Result = pd.DataFrame(Rows)
     pr_groups = {leader_id: group for leader_id, group in Final_Result.groupby('Leader_ID')}
 
@@ -144,16 +158,16 @@ def Data_Process(post_data_json):
         sys.stdout = file
         for leader, item in pr_groups.items():
             print(f"Leader_ID:   {leader}")
-            print(item[['Call_ID', 'Call_Type', 'Assignee_ID', 'Assignee_Email']])
+            print(item[['Call_ID', 'Call_Type', 'Assignee_ID','Supervisor_ID']])
             PR_Num = item[item['Call_Type'] == 'PR'].shape[0]
             ER_Num = item[item['Call_Type'] == 'ER'].shape[0]
             Assignee_Info = item['Assignee_ID'].unique()
             print(f"PR Num: {PR_Num}    ER Num: {ER_Num}    total assignee: {len(Assignee_Info)}")
             print("\n")
 
+        # Classification of assignee information
         for leader, item in pr_groups.items():
-            Assignee_Info = item['Assignee_ID'].unique()
-            Leader_Info = Get_Leader_Info(leader, Assignee_Info)
+            Get_Leader_Info(leader, item)
             # Assignee_output = ", ".join(str(assignee) for assignee in Assignee_Info)
             # print(f"assignee_id: [{Assignee_output}]")
 
@@ -176,10 +190,10 @@ if __name__ == '__main__':
     release = "2406.3000"
     pbu = "cam"
     validation = "Pass"
-    cookie = "JSESSIONID=8D96F4275A4ECBD4129808134F6A8906"
-
+    cookie = "JSESSIONID=7876938770FC9E54451D12157D68C0A8"
+    # Get Call ID set
     Call_ID_Set = Get_Request(release, pbu, validation, cookie)
-
+    # Get assignee information
     post_data_json = Post_Request(Call_ID_Set, cookie)
-
+    # Process the information & output
     Data_Process(post_data_json)

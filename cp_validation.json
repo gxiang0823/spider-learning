@@ -2934,10 +2934,10 @@
                     "seqNum": 1
                 }
             ],
-            "prEarliestFixedRelease": "2406",
-            "prEarliestFixedReleaseRtm": "2024-06-14T00:00:00",
+            "prEarliestFixedRelease": "2406.4000",
+            "prEarliestFixedReleaseRtm": "2024-08-30T00:00:00",
             "prEarliestFixedReleaseSeries": "2406",
-            "prEarliestFixedReleaseType": "FR",
+            "prEarliestFixedReleaseType": "MU",
             "prNotesCountPriv": null,
             "prNotesCountPub": null,
             "prParentRelease": "2406",
@@ -5675,10 +5675,10 @@
                     "seqNum": 1
                 }
             ],
-            "prEarliestFixedRelease": "2406.3000",
-            "prEarliestFixedReleaseRtm": "2024-08-02T00:00:00",
+            "prEarliestFixedRelease": "2406",
+            "prEarliestFixedReleaseRtm": "2024-06-14T00:00:00",
             "prEarliestFixedReleaseSeries": "2406",
-            "prEarliestFixedReleaseType": "MU",
+            "prEarliestFixedReleaseType": "FR",
             "prNotesCountPriv": null,
             "prNotesCountPub": null,
             "prParentRelease": "2406",
