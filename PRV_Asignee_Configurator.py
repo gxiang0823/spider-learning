@@ -2,9 +2,14 @@ import os.path
 import sys
 import urllib.parse
 import urllib.request
+from operator import index
+
+import numpy as np
 import pandas as pd
 import requests
 import json
+
+from sympy import false
 
 requests.packages.urllib3.disable_warnings()
 
@@ -167,7 +172,9 @@ def Data_Process(post_data_json, release, validation):
         sys.stdout = file
         for leader, item in pr_groups.items():
             print(f"Leader_ID:   {leader}")
-            print(item[['Call_ID', 'Call_Type', 'Assignee_ID', 'Supervisor_ID']])
+            if leader == "vanterve":
+                item.loc[item['application'] == 'CAM', 'Call_ID'] = '*' + item['Call_ID']
+            print(item[['Call_ID', 'Call_Type', 'Assignee_ID', 'Supervisor_ID']].to_string(index=False))
             PR_Num = item[item['Call_Type'] == 'PR'].shape[0]
             ER_Num = item[item['Call_Type'] == 'ER'].shape[0]
             Assignee_Info = item['Assignee_ID'].unique()
@@ -175,10 +182,25 @@ def Data_Process(post_data_json, release, validation):
             print("\n")
 
         # Classification of assignee information
-        for leader, item in pr_groups.items():
-            Get_Leader_Info(leader, item)
-            # Assignee_output = ", ".join(str(assignee) for assignee in Assignee_Info)
-            # print(f"assignee_id: [{Assignee_output}]")
+        assignee_buerer = Final_Result[(Final_Result['Leader_ID'] == 'buerer')]['Assignee_ID'].unique()
+        output_buerer = ", ".join(assignee_buerer)
+        print(f"Assignee ID: [else]\t-> CMM PR for Jeff Moffatt [{output_buerer}]\n")
+
+        assignee_vanterve = Final_Result[(Final_Result['Leader_ID'] == 'vanterve') & (Final_Result['application'] == 'ADD_FIXED_PLANE')]['Assignee_ID'].unique()
+        output_vanterve = ", ".join(assignee_vanterve)
+        print(f"Assignee ID: [all]\t-> Fixed Plane Additive PRs for Sagar [{output_vanterve}]\n")
+
+        assignee_vanterve_remain = Final_Result[(Final_Result['Leader_ID'] == 'vanterve') & (Final_Result['application'] != 'ADD_FIXED_PLANE')]['Assignee_ID'].unique()
+        assignee_paradise_in = Final_Result[(Final_Result['Leader_ID'] == 'paradise')]['Assignee_ID'].unique()
+        assignee_paradise = pd.Series(pd.concat([pd.Series(assignee_paradise_in), pd.Series(assignee_vanterve_remain)]).unique())
+        output_paradise = ", ".join(assignee_paradise)
+        print(f"Assignee ID: [all]\t-> CAM Machining PRs for Eric and the interns [{output_paradise}]\n")
+
+        assignee_else = Final_Result[(Final_Result['Leader_ID'] != 'buerer') & (Final_Result['Leader_ID'] != 'vanterve') & (Final_Result['Leader_ID'] != 'paradise')]['Assignee_ID'].unique()
+        output_else = ", ".join(assignee_else)
+        print(f"Assignee ID: [other]-> [{output_else}]\n")
+
+
 
     sys.stdout = original_stdout
 
