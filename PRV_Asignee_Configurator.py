@@ -62,11 +62,6 @@ def Post_Request(Call_ID_Set, cookie):
         timeout=6000
     )
     post_content = post_response.content
-    if post_content == '[]':
-        print("*************************************************************")
-        print("* Request PR List is Empty, Please try again.               *")
-        print("*************************************************************")
-        sys.exit(0)
     post_data_json = json.loads(post_content)
 
     # Down Load PR information
@@ -89,11 +84,18 @@ def Get_Leader_Info(leader, item):
         print(f"Assignee ID: [all]\t-> CAM Machining PRs for Eric and the interns [{output_info}]\n")
     else:
         output_info = ", ".join(Assignee_Info)
-        print(f"Assignee ID: [other]\t-> [{output_info}]\n")
+        print(f"Assignee ID: [other]-> [{output_info}]\n")
 
 
+def Check_data(Call_ID_Set):
+    if not Call_ID_Set:
+        print("*************************************************************")
+        print("*        Request PR List is Empty, Please try again.        *")
+        print("*************************************************************")
+        sys.exit(0)
 
-def Data_Process(post_data_json):
+
+def Data_Process(post_data_json, release, validation):
     Rows = []
     Save_Info = []
     content_list = post_data_json['content']
@@ -140,25 +142,32 @@ def Data_Process(post_data_json):
     # Save/Update developer information
     Dev_Info = pd.DataFrame(Save_Info)
     Now_Dev_Info = Dev_Info.drop_duplicates()
-    Info_file_path = 'Dev_Info.csv'
+    Info_file_path = 'Assignee_Info.csv'
     if os.path.exists(Info_file_path):
         Dev_Info_csv = pd.read_csv(Info_file_path)
-        new_items = Now_Dev_Info.merge(Dev_Info_csv, how='left',indicator=True).query('_merge == "left_only"').drop('_merge',axis=1)
-        Update_Info = pd.concat([Dev_Info_csv, new_items],ignore_index=True)
-        Update_Info.to_csv(Info_file_path,index=False)
+        new_items = Now_Dev_Info.merge(Dev_Info_csv, how='left', indicator=True).query('_merge == "left_only"').drop(
+            '_merge', axis=1)
+        Update_Info = pd.concat([Dev_Info_csv, new_items], ignore_index=True)
+        Update_Info.to_csv(Info_file_path, index=False)
     else:
-        Now_Dev_Info.to_csv(Info_file_path,index=False)
+        Now_Dev_Info.to_csv(Info_file_path, index=False)
+
+    # Create File Name
+    FILE_NAME = "result_" + release + "_"
+    if validation != "None" and len(validation) != 0:
+        FILE_NAME += validation
+    FILE_NAME += ".txt"
 
     # Save of assignee information
     Final_Result = pd.DataFrame(Rows)
     pr_groups = {leader_id: group for leader_id, group in Final_Result.groupby('Leader_ID')}
 
     original_stdout = sys.stdout
-    with open('result.txt', 'w') as file:
+    with open(FILE_NAME, 'w') as file:
         sys.stdout = file
         for leader, item in pr_groups.items():
             print(f"Leader_ID:   {leader}")
-            print(item[['Call_ID', 'Call_Type', 'Assignee_ID','Supervisor_ID']])
+            print(item[['Call_ID', 'Call_Type', 'Assignee_ID', 'Supervisor_ID']])
             PR_Num = item[item['Call_Type'] == 'PR'].shape[0]
             ER_Num = item[item['Call_Type'] == 'ER'].shape[0]
             Assignee_Info = item['Assignee_ID'].unique()
@@ -187,13 +196,15 @@ if __name__ == '__main__':
     # print("****************************************************************")
 
     # test code
-    release = "2406.3000"
+    release = "2406.4000"
     pbu = "cam"
     validation = "Pass"
-    cookie = "JSESSIONID=7876938770FC9E54451D12157D68C0A8"
+    cookie = "JSESSIONID=7A3C039FD5F28CAF83101C5DEA875CD6"
     # Get Call ID set
     Call_ID_Set = Get_Request(release, pbu, validation, cookie)
+    # Check Call ID set
+    Check_data(Call_ID_Set)
     # Get assignee information
     post_data_json = Post_Request(Call_ID_Set, cookie)
     # Process the information & output
-    Data_Process(post_data_json)
+    Data_Process(post_data_json, release, validation)
